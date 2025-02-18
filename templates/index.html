@@ -92,6 +92,7 @@
 											<li class="active"><a href="javascript:void(0)">Home <i class="rounded-down"></i></a>
 												
 											</li>
+											
 										</ul>
 									</nav>
 								</div>
@@ -292,21 +293,37 @@
 							left: 50%; 
 							transform: translate(-50%, -50%); 
 						}
+
+						.cbtn{
+							border: 0;
+							border-radius: 0.25em;
+							background: initial;
+							background-color: #2778c4;
+							color: #fff;
+							font-size: 1em;
+							padding: 0.625em 1.1em;
+						}
 					</style>
 
-						<label class="file-upload">
-							<input onchange="previewSelectedImage(event)" type="file" accept="image/*" id="file-input" />
+						<form enctype="multipart/form-data" onsubmit="submitImage(event)">
+							<label class="file-upload">
+							<input onchange="previewSelectedImage(event)" type="file" accept="image/*" id="image" name="image" />
 							<span class="icon">
 								<img id="icon-img" src="{% static 'img/upload-icon.png' %}" alt=""> 								
 							</span>
 							<img id="image-preview" class="image-preview" src="" alt="Image Preview" />
-						</label>						
+							</label>	<br/><br/><br/>
+						
+							<div style="width: 100%; display: flex; justify-content: center">
+								<button class="swal2-styled swal2-confirm" type="submit" >
+									<i class="fa fa-arrow-up"></i> Upload
+								</button>
+							</div>
+						</form>
 					`,
 					showCloseButton: true,
-					focusConfirm: false,
-					confirmButtonText: `
-						<i class="fa fa-arrow-up"></i> Upload
-					`
+					showConfirmButton: false
+
 					});
 			}
 
@@ -321,10 +338,69 @@
 					imageAlt: "Custom image"
 					});
 			}
-		</script>
+		
+		
+			function displayErrorModalResult(data){
+				Swal.fire({
+					icon: "error",
+					title: data,
+					text: "Upload only a Chest X-Ray Image",					
+				});
+			}
+			
+			
+			function displayWarningModalResult(data){
+				Swal.fire({
+					icon: "warning",
+					title: data,
+					text: "Chest X-Ray Image Analyzed Successfully!",
+					footer: '<a target="_blank" href="https://my.clevelandclinic.org/health/diseases/4471-pneumonia">Why do I have this issue?</a>',
+				});
+			}
+		
+			function displaySuccessModalResult(data){
+				Swal.fire({
+					icon: "success",
+					title: data,
+					text: "Chest X-Ray Image Analyzed Successfully!",
+					});
+			}
+
+			function submitImage(event){
+				event.preventDefault();
+
+				let formData = new FormData(); // Create a FormData object
+				let fileInput = document.getElementById('image');
+				
+				// Check if a file is selected
+				if (fileInput.files.length > 0) {
+					// Append the file to the FormData object
+					formData.append('image', fileInput.files[0]); // 'image' is the name attribute of the input
+				}
+
+               $.ajax({
+                    url: '/predict', // The URL to send the request to
+                    type: 'POST',
+                    data: formData,
+                    contentType: false, 
+                    processData: false, 
+                    success: function(response) {
+						if(response.payload === "Pneumonia"){
+							displayWarningModalResult(response.payload)
+						}else if(response.payload === "Normal"){
+							displaySuccessModalResult(response.payload)
+						}else{
+							displayErrorModalResult(response.payload)
+						}
+						
+						},
+                    error: function(xhr, status, error) {
+                        console.log(error)
+                    }
+                });
+			}
 
 
-		<script>
 			function previewSelectedImage(event){
 				const imagePreview = document.getElementById('image-preview');
 				const iconImg = document.getElementById('icon-img');
@@ -341,8 +417,6 @@
 				}
 			}
 		</script>
-
-
 
     </body>
 </html>
