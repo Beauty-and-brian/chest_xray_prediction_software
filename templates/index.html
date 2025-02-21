@@ -19,6 +19,10 @@
 		<!-- Google Fonts -->
 		<link href="https://fonts.googleapis.com/css?family=Poppins:200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i&display=swap" rel="stylesheet">
 
+		<link rel="stylesheet" href="{% static 'jquery.loadingModal.css' %}">
+		<link rel="stylesheet" href="{% static 'busy_indicator.css' %}">
+
+
 		<!-- Bootstrap CSS -->
 		<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
 		<!-- Nice Select CSS -->
@@ -43,14 +47,13 @@
         <link rel="stylesheet" href="{% static 'style.css' %}">
         <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
 
-
 		<link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
 
 		
     </head>
     <body>
-	
+
 		<!-- Preloader -->
         <div class="preloader">
             <div class="loader">
@@ -92,7 +95,6 @@
 											<li class="active"><a href="javascript:void(0)">Home <i class="rounded-down"></i></a>
 												
 											</li>
-											
 										</ul>
 									</nav>
 								</div>
@@ -182,9 +184,9 @@
 										<i class="fa fa-ambulance"></i>
 									</div>
 									<div class="single-content">
-										<span>Lorem Amet</span>
-										<h4>Emergency Cases</h4>
-										<p>Lorem ipsum sit amet consectetur adipiscing elit. Vivamus et erat in lacus convallis sodales.</p>
+										<span>X-ray Result</span>
+										<h4>Pneumonia</h4>
+										<p>This result shows that there is <b>an existence</b> of Pneumonia in the image you uploaded into the platform.</p>
 										<!-- <button onclick="displayModal(event)">test me</button> -->
 									</div>
 								</div>
@@ -198,9 +200,9 @@
 										<i class="icofont-prescription"></i>
 									</div>
 									<div class="single-content">
-										<span>Fusce Porttitor</span>
-										<h4>Doctors Timetable</h4>
-										<p>Lorem ipsum sit amet consectetur adipiscing elit. Vivamus et erat in lacus convallis sodales.</p>
+										<span>X-ray Result</span>
+										<h4>Normal</h4>
+										<p>This result shows that there is <b>no existence</b> of Pneumonia in the image you uploaded into the platform.</p>
 									</div>
 								</div>
 							</div>
@@ -213,13 +215,9 @@
 										<i class="icofont-ui-clock"></i>
 									</div>
 									<div class="single-content">
-										<span>Donec luctus</span>
-										<h4>Opening Hours</h4>
-										<ul class="time-sidual">
-											<li class="day">Monday - Fridayp <span>8.00-20.00</span></li>
-											<li class="day">Saturday <span>9.00-18.30</span></li>
-											<li class="day">Monday - Thusday <span>9.00-15.00</span></li>
-										</ul>
+										<span>X-ray Result</span>
+										<h4>Invalid Image</h4>
+										<p>This result shows that the image you uploaded is not a valid chest X-ray image.</p>
 									</div>
 								</div>
 							</div>
@@ -230,6 +228,7 @@
 		</section>
 		<!--/End Start schedule Area -->
 
+		<script src="http://code.jquery.com/jquery-3.2.1.min.js"></script>
 		
 		<!-- jquery Min JS -->
         <script src="{% static 'js/jquery.min.js' %}"></script>
@@ -272,7 +271,8 @@
 		<!-- Main JS -->
 		<script src="{% static 'js/main.js' %}"></script>
 
-		<script>
+		<script>		
+
 			function displayModal(event){
 				Swal.fire({
 					title: "Upload Chest X-ray",
@@ -327,18 +327,6 @@
 					});
 			}
 
-
-			function displayModal2(event){
-				Swal.fire({
-					title: "Sweet!",
-					text: "Modal with a custom image.",
-					imageUrl: "https://unsplash.it/400/200",
-					imageWidth: 400,
-					imageHeight: 200,
-					imageAlt: "Custom image"
-					});
-			}
-		
 		
 			function displayErrorModalResult(data){
 				Swal.fire({
@@ -369,6 +357,8 @@
 			function submitImage(event){
 				event.preventDefault();
 
+				$('.preloader').removeClass('preloader-deactivate');
+
 				let formData = new FormData(); // Create a FormData object
 				let fileInput = document.getElementById('image');
 				
@@ -385,6 +375,8 @@
                     contentType: false, 
                     processData: false, 
                     success: function(response) {
+						$('.preloader').addClass('preloader-deactivate');
+
 						if(response.payload === "Pneumonia"){
 							displayWarningModalResult(response.payload)
 						}else if(response.payload === "Normal"){
@@ -416,6 +408,13 @@
 					reader.readAsDataURL(file); // Read the file as a data URL
 				}
 			}
+
+			function triggerFullScreen(event){
+				event.preventDefault();
+
+				$('.preloader').removeClass('preloader-deactivate');
+
+				}
 		</script>
 
     </body>

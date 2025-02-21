@@ -50,6 +50,7 @@ def predict_image(request):
         # Make a prediction
         predictions = model.predict(preprocessed_image)
 
+        # predicted_class = predictions[0] # Thresholding at 0.5
         predicted_class = (predictions[0] > 0.5).astype("int32")  # Thresholding at 0.5
         predicted_prob = predictions[0][0]  # Probability of the positive class
 
