@@ -350,7 +350,7 @@
 				Swal.fire({
 					icon: "success",
 					title: data,
-					text: "Chest X-Ray Image Analyzed Successfully!",
+					text: "The uploaded Image does not contain Pneumonia!",
 					});
 			}
 
@@ -379,10 +379,8 @@
 
 						if(response.payload === "Pneumonia"){
 							displayWarningModalResult(response.payload)
-						}else if(response.payload === "Normal"){
-							displaySuccessModalResult(response.payload)
 						}else{
-							displayErrorModalResult(response.payload)
+							displaySuccessModalResult(response.payload)
 						}
 						
 						},

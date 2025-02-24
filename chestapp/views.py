@@ -55,12 +55,10 @@ def predict_image(request):
         predicted_prob = predictions[0][0]  # Probability of the positive class
 
         # Interpret the prediction
-        if predicted_class[0] <= 0.2:
-            condition = "Invalid Image!!!"
-        elif predicted_class[0] > 0.5:
-            condition = "Pneumonia"
-        else:
+        if predicted_class[0] < 0.5:
             condition = "Normal"
+        else:
+            condition = "Pneumonia"
 
         print(f'Predicted Class: {predicted_class[0]}')
         print(f'Predicted Probability: {predicted_prob:.4f}')
