@@ -42,10 +42,6 @@ def predict_image(request):
 
         # Load and preprocess the image
         preprocessed_image = load_and_preprocess_image_request(request.FILES['image'], (img_height, img_width))
-        
-        # single_image_path = 'C:\Developments\Backend\Python\chest_xray_prediction_software\chestapp\im1.png'  # Replace with your image path
-        # preprocessed_image = load_and_preprocess_image_request(single_image_path, (img_height, img_width))
-        # preprocessed_image = load_and_preprocess_image_request(single_image_path, (img_height, img_width))
 
         # Make a prediction
         predictions = model.predict(preprocessed_image)
