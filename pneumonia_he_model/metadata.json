@@ -1,0 +1,9 @@
+{
+  "input_size": 1024,
+  "encryption_scale": 0.125,
+  "image_size": 32,
+  "normalization": {
+    "mean": 0.0,
+    "std": 4.0
+  }
+}

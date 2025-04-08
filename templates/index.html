@@ -126,6 +126,7 @@
 									<p>Trust our advanced technology to provide you with clear, expert analysis of your X-ray images in no time. </p>
 									<div class="button">
 										<a onclick="displayModal(event)" href="javascript:void(0)" class="btn">Check Chest X-ray</a>
+										<a onclick="displayEncryptionModal(event)" href="javascript:void(0)" class="btn" style="background-color: grey;">Check Encrypted images</a>
 									</div>
 								</div>
 							</div>
@@ -143,6 +144,7 @@
 									<p>Upload your images and let our sophisticated technology provide you with expert insights tailored to your health needs. </p>
 									<div class="button">
 										<a onclick="displayModal(event)" href="javascript:void(0)" class="btn">Check Chest X-ray</a>
+										<a onclick="displayEncryptionModal(event)" href="javascript:void(0)" class="btn" style="background-color: grey;">Check Encrypted images</a>
 									</div>
 								</div>
 							</div>
@@ -160,6 +162,7 @@
 									<p>Experience the confidence of having your X-ray images interpreted by cutting-edge AI technology designed for accuracy and clarity. </p>
 									<div class="button">
 										<a onclick="displayModal(event)" href="javascript:void(0)" class="btn">Check Chest X-ray</a>
+										<a onclick="displayEncryptionModal(event)" href="javascript:void(0)" class="btn" style="background-color: grey;">Check Encrypted images</a>
 									</div>
 								</div>
 							</div>
@@ -328,6 +331,63 @@
 			}
 
 		
+			function displayEncryptionModal(event){
+				Swal.fire({
+					title: "Upload Chest X-ray",
+					icon: "info",
+					html: `
+					<style>
+						.file-upload input[type="file"] {
+							display: none; 
+						}
+
+						.image-preview {
+							max-width:50%;
+							max-height: 50%; 
+							border-radius: 5px; 
+							display: none;
+							position: absolute;
+							top: 60%; 
+							left: 50%; 
+							transform: translate(-50%, -50%); 
+						}
+
+						.cbtn{
+							border: 0;
+							border-radius: 0.25em;
+							background: initial;
+							background-color: #2778c4;
+							color: #fff;
+							font-size: 1em;
+							padding: 0.625em 1.1em;
+						}
+					</style>
+
+						<form enctype="multipart/form-data" onsubmit="submitEncImage(event)">
+							<label class="file-upload">
+							<input onchange="previewSelectedEncryptedImageFile(event)" type="file" accept="*" id="image_enc" name="image_enc" />
+							<span class="icon">
+								<img id="icon-img" src="{% static 'img/upload-icon.png' %}" alt=""> 								
+							</span>
+							<img id="image-preview" class="image-preview" src="" alt="Image Preview" />
+							<span id="file-name-display"></span>
+							
+							</label>	<br/><br/><br/>
+						
+							<div style="width: 100%; display: flex; justify-content: center">
+								<button style="visibility: hidden" id="subEncBtn" class="swal2-styled swal2-confirm" type="submit" >
+									<i class="fa fa-arrow-up"></i> Upload
+								</button>
+							</div>
+						</form>
+					`,
+					showCloseButton: true,
+					showConfirmButton: false
+
+					});
+			}
+
+		
 			function displayErrorModalResult(data){
 				Swal.fire({
 					icon: "error",
@@ -389,6 +449,43 @@
                     }
                 });
 			}
+			
+			
+			function submitEncImage(event){
+				event.preventDefault();
+
+				$('.preloader').removeClass('preloader-deactivate');
+
+				let formData = new FormData(); // Create a FormData object
+				let fileInput = document.getElementById('image_enc');
+				
+				// Check if a file is selected
+				if (fileInput.files.length > 0) {
+					// Append the file to the FormData object
+					formData.append('image_enc', fileInput.files[0]); // 'image' is the name attribute of the input
+				}
+
+               $.ajax({
+                    url: '/predict-enc', // The URL to send the request to
+                    type: 'POST',
+                    data: formData,
+                    contentType: false, 
+                    processData: false, 
+                    success: function(response) {
+						$('.preloader').addClass('preloader-deactivate');
+
+						if(response.payload === "Pneumonia"){
+							displayWarningModalResult(response.payload)
+						}else{
+							displaySuccessModalResult(response.payload)
+						}
+						
+						},
+                    error: function(xhr, status, error) {
+                        console.log(error)
+                    }
+                });
+			}
 
 
 			function previewSelectedImage(event){
@@ -409,6 +506,22 @@
 					subBtn.style.visibility = "visible"
 				}
 			}
+
+
+			function previewSelectedEncryptedImageFile(event) {
+				const iconImg = document.getElementById('icon-img');
+				const fileNameDisplay = document.getElementById('file-name-display');
+				const subEncBtn = document.getElementById('subEncBtn');
+
+				const file = event.target.files[0];
+				iconImg.style.opacity = '0';
+
+            if (file) {
+                fileNameDisplay.textContent = file.name; // Show filename
+				subEncBtn.style.visibility = "visible"
+            }
+        }
+
 
 			function triggerFullScreen(event){
 				event.preventDefault();

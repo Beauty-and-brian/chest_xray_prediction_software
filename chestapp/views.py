@@ -1,30 +1,11 @@
 import os
 from django.conf import settings
 from django.shortcuts import render
-import numpy as np
-from tensorflow.keras.preprocessing import image
 import tensorflow as tf
 from django.views.decorators.csrf import csrf_exempt
-from PIL import Image
 from django.http import JsonResponse
-
-
-
-def load_and_preprocess_image(img_path, target_size):
-    img = image.load_img(img_path, target_size=target_size)
-    img_array = image.img_to_array(img)
-    img_array = np.expand_dims(img_array, axis=0)  
-    img_array = img_array / 255.0  
-    return img_array
-
-
-def load_and_preprocess_image_request(uploaded_file, target_size):
-    img = Image.open(uploaded_file).convert('RGB')   
-    img = img.resize(target_size)    
-    img_array = image.img_to_array(img)
-    img_array = np.expand_dims(img_array, axis=0)
-    img_array = img_array / 255.0
-    return img_array
+from utils.direct_image_loadings import load_and_preprocess_image_request
+from utils.loading_he_model import load_he_model
 
 
 # Create your views here.
@@ -70,5 +51,27 @@ def predict_image(request):
 
 
 
+@csrf_exempt
+def predict_from_saved_encrypted_model(request):
 
+    # Load the encrypted image from the request object
+    uploaded_file = request.FILES['image_enc']
+    
+    # load and import the HE trained model
+    model, context = load_he_model()
+    
+    # Make prediction (no need to preprocess or encrypt again)
+    pred, confidence = model.predict_single(uploaded_file)
+    
+    # 3. Display results
+    print("\nPrediction from Saved Encrypted Image:")
+    print(f"Prediction: {pred}")
+    print(f"Confidence: {confidence:.4f}")
+    print(f"Interpretation: {'Pneumonia detected' if pred == 'PNEUMONIA' else 'Normal chest X-ray'}")
+    
+    return JsonResponse({
+            'prediction': pred,
+            'confidence': float(confidence),
+            'status': 'success'
+        })
 

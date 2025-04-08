@@ -1,2 +1,5 @@
 The Python version that works for this project is:
 Python version 3.8 and 3.9
+
+Below are the packages that needs to be installed;
+!pip install tenseal torch torchvision pillow numpy pandas scikit-learn
