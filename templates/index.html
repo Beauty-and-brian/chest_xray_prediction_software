@@ -462,11 +462,11 @@
 				// Check if a file is selected
 				if (fileInput.files.length > 0) {
 					// Append the file to the FormData object
-					formData.append('image_enc', fileInput.files[0]); // 'image' is the name attribute of the input
+					formData.append('image', fileInput.files[0]); // 'image' is the name attribute of the input
 				}
 
                $.ajax({
-                    url: '/predict-enc', // The URL to send the request to
+                    url: '/predict', // The URL to send the request to
                     type: 'POST',
                     data: formData,
                     contentType: false, 
